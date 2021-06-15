@@ -31,6 +31,7 @@ class BotController:
     def start(self):
         self.__logger.info("Starting bot")
         self.__updater.start_polling()
+        self.__updater.idle()
 
 
 if __name__ == "__main__":
