@@ -6,7 +6,10 @@ from src.handlers.abstract_handler import AbstractHandler
 
 class StartHandler(AbstractHandler):
 
-    __start_message = "Hi! Nice to see you here :)"
+    __start_message = (
+        "Hi! I'm a nice bot that can help with cider! "
+        "Just ask me what you want in free form. Also, I can talk about weather in some city."
+    )
 
     @property
     def command_name(self):
