@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import List
+from typing import Dict
 
 
 class Command(Enum):
@@ -12,4 +12,4 @@ class Command(Enum):
 class Intent:
     command: Command
     message: str
-    parameters: List[str] = field(default_factory=list)
+    parameters: Dict[str, str] = field(default_factory=dict)

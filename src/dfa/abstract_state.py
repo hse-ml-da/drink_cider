@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Callable
+from typing import Dict, Callable, Optional
 
 from src.intent.intent import Intent, Command
 
@@ -7,7 +7,7 @@ from src.intent.intent import Intent, Command
 @dataclass
 class MoveResponse:
     new_state: "AbstractState"
-    response: str
+    message: Optional[str]
 
 
 IntentHandler = Callable[[Intent], MoveResponse]
@@ -16,6 +16,14 @@ IntentHandler = Callable[[Intent], MoveResponse]
 class AbstractState:
     def __init__(self):
         self._command_handler: Dict[Command, IntentHandler] = {}
+
+    @property
+    def introduce_message(self) -> Optional[str]:
+        return None
+
+    @property
+    def is_technical_state(self) -> bool:
+        return False
 
     def move(self, intent: Intent) -> MoveResponse:
         if intent.command in self._command_handler:

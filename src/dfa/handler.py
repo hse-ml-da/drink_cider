@@ -24,3 +24,9 @@ class DfaUserHandler:
     def clean(self):
         self.__logger.info(f"Clean dfa states")
         self.__dfa: Dict[int, AbstractState] = {}
+
+    def reset_user(self, user_id: int):
+        if user_id not in self.__dfa:
+            self.__logger.error(f"Try to reset unknown user")
+            return
+        del self.__dfa[user_id]

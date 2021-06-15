@@ -1,11 +1,11 @@
-from src.dfa.abstract_state import AbstractState, MoveResponse
+import src.dfa as dfa
 from src.intent.intent import Intent, Command
 
 
-class StartState(AbstractState):
+class StartState(dfa.AbstractState):
     def __init__(self):
         super().__init__()
         self._command_handler[Command.WEATHER] = self.handle_weather_command
 
-    def handle_weather_command(self, intent: Intent) -> MoveResponse:
-        return MoveResponse(self, "It works!")
+    def handle_weather_command(self, intent: Intent) -> dfa.MoveResponse:
+        return dfa.MoveResponse(dfa.GetCityWeatherState(), None)
