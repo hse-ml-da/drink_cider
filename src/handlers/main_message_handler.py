@@ -2,9 +2,14 @@ from telegram import Update
 from telegram.ext import CallbackContext, Handler, MessageHandler, Filters
 
 from src.handlers.abstract_handler import AbstractHandler
+from src.model import Model
 
 
 class MainMessageHandler(AbstractHandler):
+    def __init__(self, model: Model):
+        super().__init__()
+        self.__model = model
+
     @property
     def command_name(self) -> str:
         return "message"
@@ -16,7 +21,9 @@ class MainMessageHandler(AbstractHandler):
         if update.message is None:
             self.__logger.error(f"Can't find message for {self.command_name} query")
             return
-        callback_context.bot.send_message(chat_id=update.effective_chat.id, text=update.message.text)
+        response_messages = self.__model.handle_message(update.effective_chat.id, update.message.text)
+        for response_message in response_messages:
+            callback_context.bot.send_message(chat_id=update.effective_chat.id, text=response_message)
 
     def create(self) -> Handler:
         return MessageHandler(Filters.text & (~Filters.command), self._callback_wrapper)
