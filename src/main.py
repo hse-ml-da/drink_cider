@@ -3,7 +3,7 @@ import os
 
 from src.bot_controller import BotController
 
-MODE = "dev"
+MODE = "production"
 TELEGRAM_BOT_TOKEN = "TELEGRAM_BOT_TOKEN"
 TELEGRAM_TEST_BOT_TOKEN = "TELEGRAM_TEST_BOT_TOKEN"
 
