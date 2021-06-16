@@ -12,4 +12,4 @@ class Command(Enum):
 class Intent:
     command: Command
     message: str
-    parameters: Dict[str, str] = field(default_factory=dict)
+    parameters: Dict[str, str] = field(default_factory=dict, init=True)

@@ -1,5 +1,5 @@
 import src.dfa as dfa
-from src.intent.intent import Intent, Command
+from src.parse.intent import Intent, Command
 
 
 class StartState(dfa.AbstractState):

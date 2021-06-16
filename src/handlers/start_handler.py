@@ -7,8 +7,8 @@ from src.handlers.abstract_handler import AbstractHandler
 class StartHandler(AbstractHandler):
 
     __start_message = (
-        "Hi! I'm a nice bot that can help with cider! "
-        "Just ask me what you want in free form. Also, I can talk about weather in some city."
+        "Привет! Я бот, который поможет тебе выбрать сидр 🍺! "
+        "Просто опиши мне в свободной форме, что ты хочешь. Также я могу рассказать о погоде в различных городах."
     )
 
     @property

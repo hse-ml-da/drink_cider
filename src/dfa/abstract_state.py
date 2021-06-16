@@ -1,7 +1,8 @@
+from abc import ABC
 from dataclasses import dataclass
 from typing import Dict, Callable, Optional
 
-from src.intent.intent import Intent, Command
+from src.parse.intent import Intent, Command
 
 
 @dataclass
@@ -13,7 +14,7 @@ class MoveResponse:
 IntentHandler = Callable[[Intent], MoveResponse]
 
 
-class AbstractState:
+class AbstractState(ABC):
     def __init__(self):
         self._command_handler: Dict[Command, IntentHandler] = {}
 
@@ -31,4 +32,4 @@ class AbstractState:
         return self.handle_unknown_command()
 
     def handle_unknown_command(self) -> MoveResponse:
-        return MoveResponse(self, "Sorry, I can't understand you")
+        return MoveResponse(self, "Прости, я не понимаю тебя 🙈")
