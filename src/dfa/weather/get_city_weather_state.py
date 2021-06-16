@@ -1,12 +1,9 @@
-import os
-
 import src.dfa as dfa
 from src.api.weather import WeatherAPI, ResponseStatus
 from src.parse.intent import Intent, Command
 
 
 class GetCityWeatherState(dfa.BaseState):
-    __OPEN_WEATHER_API_KEY = "OPEN_WEATHER_API_KEY"
 
     __disable_message = "Модуль погоды ушёл в отпуск и сейчас недоступен."
     __unavailable_message = "Сервер сейчас недоступен, попробуйте позже."
@@ -16,12 +13,9 @@ class GetCityWeatherState(dfa.BaseState):
     def __init__(self):
         super().__init__()
         self._command_handler[Command.WEATHER] = self.handle_weather_command
-        self.__api_key = os.environ.get(self.__OPEN_WEATHER_API_KEY)
-        if self.__api_key is None:
-            self._logger.error(f"Can't find token for open weather API in env var: {self.__OPEN_WEATHER_API_KEY}")
+        self.__weather_api = WeatherAPI()
+        if not self.__weather_api.enabled:
             self.move = self.__disable_move
-        else:
-            self.__weather_api = WeatherAPI(self.__api_key)
 
     @property
     def is_technical_state(self) -> bool:

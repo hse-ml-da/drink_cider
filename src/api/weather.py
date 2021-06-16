@@ -1,3 +1,4 @@
+import os
 from dataclasses import dataclass
 from enum import Enum, auto
 from logging import getLogger
@@ -28,11 +29,18 @@ class WeatherApiResponse:
 
 class WeatherAPI:
 
+    __OPEN_WEATHER_API_KEY = "OPEN_WEATHER_API_KEY"
     __api_endpoint = "https://api.openweathermap.org/data/2.5/weather"
 
-    def __init__(self, open_weather_api_key: str):
+    def __init__(self):
         self.__logger = getLogger(__file__)
-        self.__api_key = open_weather_api_key
+        self.__api_key = os.environ.get(self.__OPEN_WEATHER_API_KEY)
+        if self.__api_key is None:
+            self.__logger.error(f"Can't find token for open weather API in env var: {self.__OPEN_WEATHER_API_KEY}")
+
+    @property
+    def enabled(self) -> bool:
+        return self.__api_key is not None
 
     def __create_request_url(self, city: str) -> str:
         return f"?q={city}&appid={self.__api_key}&lang=ru&units=metric"
