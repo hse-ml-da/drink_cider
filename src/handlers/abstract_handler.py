@@ -1,6 +1,5 @@
 import logging
 from abc import ABC
-from typing import Optional
 
 from telegram import Update
 from telegram.ext import CallbackContext, Handler, CommandHandler

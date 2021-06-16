@@ -1,8 +1,8 @@
 import src.dfa as dfa
-from src.intent.intent import Intent, Command
+from src.parse.intent import Intent, Command
 
 
-class StartState(dfa.AbstractState):
+class StartState(dfa.BaseState):
     def __init__(self):
         super().__init__()
         self._command_handler[Command.WEATHER] = self.handle_weather_command

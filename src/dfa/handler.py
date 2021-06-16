@@ -1,21 +1,21 @@
 from logging import getLogger
 from typing import Dict
 
-from src.dfa.abstract_state import AbstractState
+from src.dfa.base_state import BaseState
 from src.dfa.start_state import StartState
 
 
 class DfaUserHandler:
     def __init__(self):
         self.__logger = getLogger(__file__)
-        self.__dfa: Dict[int, AbstractState] = {}
+        self.__dfa: Dict[int, BaseState] = {}
 
-    def get_user_dfa(self, user_id: int) -> AbstractState:
+    def get_user_dfa(self, user_id: int) -> BaseState:
         if user_id not in self.__dfa:
             self.__dfa[user_id] = StartState()
         return self.__dfa[user_id]
 
-    def set_user_dfa(self, user_id: int, state: AbstractState):
+    def set_user_dfa(self, user_id: int, state: BaseState):
         if user_id not in self.__dfa:
             self.__logger.error(f"Can't set new state for {user_id}")
             return
@@ -23,7 +23,7 @@ class DfaUserHandler:
 
     def clean(self):
         self.__logger.info(f"Clean dfa states")
-        self.__dfa: Dict[int, AbstractState] = {}
+        self.__dfa: Dict[int, BaseState] = {}
 
     def reset_user(self, user_id: int):
         if user_id not in self.__dfa:

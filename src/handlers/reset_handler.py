@@ -10,7 +10,7 @@ class ResetHandler(AbstractHandler):
         super().__init__()
         self.__model = model
 
-    __reset_message = "Ok! Let's start over..."
+    __reset_message = "Хорошо, давай начнём сначала…"
 
     @property
     def command_name(self):
