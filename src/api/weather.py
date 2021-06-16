@@ -48,13 +48,13 @@ class WeatherAPI:
     def get_weather(self, city: str) -> Optional[WeatherApiResponse]:
         params = {"q": city, "appid": self.__api_key, "lang": "ru", "units": "metric"}
         response = get(self.__api_endpoint, params=params)
+        if response.status_code == 404:
+            self.__logger.info(f"Request to weather in unknown city: {city}")
+            return WeatherApiResponse(ResponseStatus.NOT_FOUND)
         if response.status_code != 200:
             self.__logger.error(f"Request to open weather return {response.status_code} status code")
             return WeatherApiResponse(ResponseStatus.UNAVAILABLE)
         parsed_response = response.json()
-        if parsed_response["cod"] == "404":
-            self.__logger.info(f"Request to weather in unknown city: {city}")
-            return WeatherApiResponse(ResponseStatus.NOT_FOUND)
         self.__logger.info(f"Successful request for weather in {city}")
         return WeatherApiResponse(
             ResponseStatus.OK,

@@ -31,6 +31,7 @@ class Parser:
     def parse(self, message: str) -> Intent:
         document = self.__natasha_preprocessing(message)
         for command, command_parser in self.__command_parsers.items():
-            if command_parser.validate_query(document):
-                return Intent(command, message, command_parser.extract_parameters(document))
+            parse_results = command_parser.process(document)
+            if parse_results is not None:
+                return Intent(command, message, parse_results)
         return Intent(Command.UNKNOWN, message)

@@ -1,11 +1,9 @@
 from abc import ABC
-from pydoc import Doc
-from typing import Dict
+from typing import Dict, Optional
+
+from natasha import Doc
 
 
 class CommandParser(ABC):
-    def validate_query(self, message: Doc) -> bool:
-        raise NotImplementedError()
-
-    def extract_parameters(self, message: Doc) -> Dict[str, str]:
+    def process(self, message: Doc) -> Optional[Dict[str, str]]:
         raise NotImplementedError()

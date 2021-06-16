@@ -5,3 +5,4 @@ python-telegram-bot~=13.6
 natasha~=1.4.0
 requests~=2.25.1
 types-requests~=0.1.11
+yargy~=0.15.0
