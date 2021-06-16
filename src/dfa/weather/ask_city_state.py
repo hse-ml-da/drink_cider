@@ -4,7 +4,7 @@ import src.dfa as dfa
 from src.parse.intent import Intent, Command
 
 
-class AskCityState(dfa.AbstractState):
+class AskCityState(dfa.BaseState):
     def __init__(self):
         super().__init__()
         self._command_handler[Command.WEATHER] = self.handle_weather_command

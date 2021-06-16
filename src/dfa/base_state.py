@@ -1,21 +1,23 @@
-from abc import ABC
 from dataclasses import dataclass
+from logging import getLogger
 from typing import Dict, Callable, Optional
 
 from src.parse.intent import Intent, Command
+from src.singleton import Singleton
 
 
 @dataclass
 class MoveResponse:
-    new_state: "AbstractState"
+    new_state: "BaseState"
     message: Optional[str]
 
 
 IntentHandler = Callable[[Intent], MoveResponse]
 
 
-class AbstractState(ABC):
+class BaseState(metaclass=Singleton):
     def __init__(self):
+        self._logger = getLogger(__file__)
         self._command_handler: Dict[Command, IntentHandler] = {}
 
     @property

@@ -27,7 +27,7 @@ class Model:
         return response_messages
 
     def __make_move(
-        self, user_id: int, current_state: dfa.AbstractState, intent: Intent, response_messages: List[str]
+        self, user_id: int, current_state: dfa.BaseState, intent: Intent, response_messages: List[str]
     ) -> dfa.MoveResponse:
         response = current_state.move(intent)
         self.__logger.info(
