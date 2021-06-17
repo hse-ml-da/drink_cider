@@ -17,6 +17,7 @@ class Parser:
         self.__syntax_parser = NewsSyntaxParser(emb)
 
     def __natasha_preprocessing(self, message: str) -> Doc:
+        message = message.title()
         document = Doc(message)
         document.segment(self.__segmenter)
         document.tag_morph(self.__morph_tagger)

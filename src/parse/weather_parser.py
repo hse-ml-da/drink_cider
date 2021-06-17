@@ -2,7 +2,7 @@ from os.path import join
 from typing import Dict, Optional
 
 from natasha import Doc
-from natasha.grammars.addr import Settlement, NAME, INT, DOT, TITLE, NOUN, ADJF, DASH
+from natasha.grammars.addr import Settlement, INT, DOT, TITLE, NOUN, ADJF, DASH
 from yargy import Parser, or_, rule, and_
 from yargy.pipelines import morph_pipeline
 from yargy.predicates import in_caseless, caseless, normalized, dictionary
@@ -31,9 +31,9 @@ class WeatherParser(CommandParser):
         for span in message.spans:
             if span.type == "LOC":
                 return span.normal
-        city = self.__yargi_parser.find(message.text)
-        if city is not None:
-            return self.__back_translation(city.fact.name)
+        for token in message.tokens:
+            if self.__yargi_parser.match(token.lemma) is not None:
+                return self.__back_translation(token.lemma)
         return None
 
     def process(self, message: Doc) -> Optional[Dict[str, str]]:
