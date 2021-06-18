@@ -30,7 +30,7 @@ class WeatherParser(CommandParser):
     def __extract_city(self, message: Doc) -> Optional[str]:
         for span in message.spans:
             if span.type == "LOC":
-                return span.normal
+                return self.__back_translation(span.normal)
         for token in message.tokens:
             if self.__yargi_parser.match(token.lemma) is not None:
                 return self.__back_translation(token.lemma)
@@ -47,7 +47,7 @@ class WeatherParser(CommandParser):
 
     def __back_translation(self, city: str) -> str:
         for name, abbreviation in self.__city_abbreviations.items():
-            if city in abbreviation:
+            if city.lower() in abbreviation:
                 return name
         return city
 
