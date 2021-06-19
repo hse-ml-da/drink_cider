@@ -1,5 +1,9 @@
+black~=21.6b0
+mypy~=0.902
+pytest~=6.2.4
 python-telegram-bot~=13.6
 natasha~=1.4.0
 requests~=2.25.1
+types-requests~=0.1.12
 yargy~=0.15.0
 transformers~=4.7.0

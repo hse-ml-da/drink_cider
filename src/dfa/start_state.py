@@ -1,5 +1,4 @@
 import src.dfa as dfa
-from src.dfa.dialogue_state import DialogueState
 from src.parse.intent import Intent, Command
 
 

@@ -1,4 +1,3 @@
-import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 
@@ -25,21 +24,20 @@ class Dialogue:
         input_ids = self.__tokenizer.encode(f"|0|{self._get_length_param(message)}|{message}|1|-|", return_tensors="pt")
 
         # Generated a response
-        with torch.no_grad():
-            chat_history_ids = self.__model.generate(
-                input_ids,
-                num_return_sequences=1,
-                max_length=512,
-                no_repeat_ngram_size=3,
-                do_sample=True,
-                top_k=50,
-                top_p=0.9,
-                temperature=0.6,
-                mask_token_id=self.__tokenizer.mask_token_id,
-                eos_token_id=self.__tokenizer.eos_token_id,
-                unk_token_id=self.__tokenizer.unk_token_id,
-                pad_token_id=self.__tokenizer.pad_token_id,
-                device="cpu",
-            )
+        chat_history_ids = self.__model.generate(
+            input_ids,
+            num_return_sequences=1,
+            max_length=512,
+            no_repeat_ngram_size=3,
+            do_sample=True,
+            top_k=50,
+            top_p=0.9,
+            temperature=0.6,
+            mask_token_id=self.__tokenizer.mask_token_id,
+            eos_token_id=self.__tokenizer.eos_token_id,
+            unk_token_id=self.__tokenizer.unk_token_id,
+            pad_token_id=self.__tokenizer.pad_token_id,
+            device="cpu",
+        )
 
         return self.__tokenizer.decode(chat_history_ids[:, input_ids.shape[-1] :][0], skip_special_tokens=True)
