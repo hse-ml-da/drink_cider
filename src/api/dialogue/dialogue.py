@@ -1,11 +1,17 @@
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from typing import Union
+
+import torch
+from torch import nn
+from transformers import AutoTokenizer
 
 
 class Dialogue:
-    def __init__(self):
+    def __init__(self, model: Union[str, nn.Module]):
         self.__tokenizer = AutoTokenizer.from_pretrained("Grossmend/rudialogpt3_medium_based_on_gpt2")
-        self.__model = AutoModelForCausalLM.from_pretrained("Grossmend/rudialogpt3_medium_based_on_gpt2")
-        self.__model.eval()
+        if isinstance(model, str):
+            model = torch.load(model)
+        self.__model = model
+        # self.__model.eval()
 
     def _get_length_param(self, text: str) -> str:
         tokens_count = len(self.__tokenizer.encode(text))
