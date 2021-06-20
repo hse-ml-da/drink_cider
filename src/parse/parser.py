@@ -1,13 +1,22 @@
 from natasha import Doc, Segmenter, MorphVocab, NewsEmbedding, NewsNERTagger, NewsSyntaxParser
 from natasha.morph.tagger import NewsMorphTagger
 
+from src.parse.ciry_extractor import CityExtractor
+from src.parse.command_parsers.city_parser import CityParser
 from src.parse.intent import Intent, Command
-from src.parse.weather_parser import WeatherParser
+from src.parse.command_parsers.weather_parser import WeatherParser
+from src.parse.user_state_extractor import UserStateExtractor
 
 
 class Parser:
     def __init__(self):
-        self.__command_parsers = {Command.WEATHER: WeatherParser()}
+        city_extractor = CityExtractor()
+        self.__command_parsers = {
+            Command.WEATHER: WeatherParser(city_extractor),
+            Command.CITY: CityParser(city_extractor),
+        }
+        self.__user_state_extractor = UserStateExtractor()
+
         self.__segmenter = Segmenter()
         # TODO: check if there are existing another embeddings
         emb = NewsEmbedding()
@@ -31,8 +40,9 @@ class Parser:
 
     def parse(self, message: str) -> Intent:
         document = self.__natasha_preprocessing(message)
+        user_state = self.__user_state_extractor.get_user_state(document)
         for command, command_parser in self.__command_parsers.items():
             parse_results = command_parser.process(document)
             if parse_results is not None:
-                return Intent(command, message, parse_results)
-        return Intent(Command.UNKNOWN, message)
+                return Intent(command, message, parse_results, user_state)
+        return Intent(Command.UNKNOWN, message, user_state=user_state)

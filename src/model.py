@@ -2,7 +2,7 @@ from logging import getLogger
 from typing import List
 
 import src.dfa as dfa
-from src.parse.intent import Intent
+from src.parse.intent import Intent, UserState, Command
 from src.parse.parser import Parser
 
 
@@ -16,6 +16,14 @@ class Model:
         intent = self.__parser.parse(message)
         current_state = self.__dfa_user_handler.get_user_dfa(user_id)
         response_messages: List[str] = []
+
+        if intent.user_state == UserState.GREETINGS:
+            response_messages.append("Привет! 👋")
+            if intent.command == Command.UNKNOWN:
+                return response_messages
+        elif intent.user_state == UserState.LEAVING:
+            self.reset_user(user_id)
+            return ["Пока! 🤝"]
 
         response = self.__make_move(user_id, current_state, intent, response_messages)
         while response.new_state.is_technical_state:
