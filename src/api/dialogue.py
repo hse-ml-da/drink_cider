@@ -1,14 +1,17 @@
+import pickle
 import subprocess
+import tarfile
 from logging import getLogger
 from os.path import join, exists
 
 import torch
+from torch.serialization import _open_zipfile_reader, _load
 from transformers import AutoTokenizer
 
 
 class Dialogue:
-    __link_to_model = "https://voudy-data.s3.eu-north-1.amazonaws.com/dialogpt2_quant.pth"
-    __path_to_model = join("src", "resources", "dialogue_model_weights.pth")
+    __link_to_model = "https://voudy-data.s3.eu-north-1.amazonaws.com/dialogue_model_weights.pth.tar.gz"
+    __path_to_model = join("src", "resources", "dialogue_model_weights.pth.tar.gz")
 
     def __init__(self):
         self.__logger = getLogger(__file__)
@@ -18,10 +21,17 @@ class Dialogue:
             if not exists(self.__path_to_model):
                 subprocess.run(["wget", self.__link_to_model, "-O", self.__path_to_model])
             torch.backends.quantized.engine = "qnnpack"
-            self.__model = torch.load(self.__path_to_model)
+            self.__model = self.__torch_load_tar_gz(self.__path_to_model)
             self.__model.eval()
         except Exception as e:
             self.__logger.error(f"Error during model initialization: {e}")
+
+    def __torch_load_tar_gz(self, file_path: str) -> torch.nn.Module:
+        tar = tarfile.open(file_path, "r:gz")
+        member = tar.getmembers()[0]
+        with tar.extractfile(member) as untar:
+            with _open_zipfile_reader(untar) as zipfile:
+                return _load(zipfile, torch.device("cpu"), pickle)
 
     @property
     def enabled(self) -> bool:
