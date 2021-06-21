@@ -1,6 +1,6 @@
+import subprocess
 from logging import getLogger
 from os.path import join, exists
-from urllib.request import URLopener
 
 import torch
 from transformers import AutoTokenizer
@@ -16,9 +16,7 @@ class Dialogue:
         try:
             self.__tokenizer = AutoTokenizer.from_pretrained("Grossmend/rudialogpt3_medium_based_on_gpt2")
             if not exists(self.__path_to_model):
-                self.__logger.info("Can't find the weights for model, so download it")
-                url_opener = URLopener()
-                url_opener.retrieve(self.__link_to_model, self.__path_to_model)
+                subprocess.run(["wget", self.__link_to_model, "-O", self.__path_to_model])
             torch.backends.quantized.engine = "qnnpack"
             self.__model = torch.load(self.__path_to_model)
             self.__model.eval()
