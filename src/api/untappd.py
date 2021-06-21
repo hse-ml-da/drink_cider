@@ -5,26 +5,23 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 
 cookies = {
-    '__utma': '13579763.66457459.1624011192.1624011192.1624011192.1',
-    '__utmb': '13579763.10.9.1624011657575',
-    '__utmc': '13579763',
-    '__utmz': '13579763.1623926840.4.3.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided)',
-    '__utmt': '1',
-    '_ALGOLIA': '99142a65-8111-4d7b-b788-c4565716d5b9',
-    'untappd_user_v3_e': 'c2f3a8cf34aaba61afda364ea7cc98a0f0731afbf43c3bfe2e3243b4d9a12216bf5ab645d478a5e9076f16b2b27f7637ab5c88b3304d57af7fad02f97d1a597d3ZfUjmK1oQDtcoWl%2B9%2FyLjfSNmrAekHnLqLTU23ATpKfeB808Lprbql%2BMYx3KLjg9OdH%2FozbguIKPMz1IbYetA%3D%3D',
-    'ut_d_l': '7ca0d74e18218e26345aa5be52298c12fcfc0d3a7783b9d89ccce2df3422f0cad77bc7646f7a15fb212c5ff261caf8e87b2a39afc6a894f4ad479f432bf4661cVLeFP0RVh88qm7okaUgG8izqeSUrCToPO4px0cza4CBhK39VH30TXnvkonXXn6tBAaP9lQkYSCj6WpTJgSN2ow%3D%3D',
-    '__gads': 'ID=0cb79354f00e9e22-227c9c5062c800d7:T=1623785784:RT=1623785784:S=ALNI_MbkTFO32OJY9qGxz6FtSvNGFO2_Qg',
-    'FCCDCF': "[['AKsRol8D1vSInhHSM4yX31mseEJAfgFs-LRHMAJLhR8HJZC73NWOR6zAyB-3T6M7kjynhdJHFwC7CBgeokFuXTU1C-gwlD-_B8JxvXHVr93_Y3Ma4_m0w2e49IszhizY-CnW2qNfj8OaIi0kLJTYSON13HohrFsffQ=='],null,['[[],[],[],[],null,null,true]',1623785772516],null]",
-    '_ga': 'GA1.2.1930691142.1623785772',
-    'sliguid': '64c7a56e-6466-459a-a591-a7809684ab93',
-    'slireg': 'https://scout.us2.salesloft.com',
-    'slirequested': 'true'
+    "__utma": "13579763.66457459.1624011192.1624011192.1624011192.1",
+    "__utmb": "13579763.10.9.1624011657575",
+    "__utmc": "13579763",
+    "__utmz": "13579763.1623926840.4.3.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided)",
+    "__utmt": "1",
+    "_ALGOLIA": "99142a65-8111-4d7b-b788-c4565716d5b9",
+    "untappd_user_v3_e": "c2f3a8cf34aaba61afda364ea7cc98a0f0731afbf43c3bfe2e3243b4d9a12216bf5ab645d478a5e9076f16b2b27f7637ab5c88b3304d57af7fad02f97d1a597d3ZfUjmK1oQDtcoWl%2B9%2FyLjfSNmrAekHnLqLTU23ATpKfeB808Lprbql%2BMYx3KLjg9OdH%2FozbguIKPMz1IbYetA%3D%3D",
+    "ut_d_l": "7ca0d74e18218e26345aa5be52298c12fcfc0d3a7783b9d89ccce2df3422f0cad77bc7646f7a15fb212c5ff261caf8e87b2a39afc6a894f4ad479f432bf4661cVLeFP0RVh88qm7okaUgG8izqeSUrCToPO4px0cza4CBhK39VH30TXnvkonXXn6tBAaP9lQkYSCj6WpTJgSN2ow%3D%3D",
+    "__gads": "ID=0cb79354f00e9e22-227c9c5062c800d7:T=1623785784:RT=1623785784:S=ALNI_MbkTFO32OJY9qGxz6FtSvNGFO2_Qg",
+    "FCCDCF": "[['AKsRol8D1vSInhHSM4yX31mseEJAfgFs-LRHMAJLhR8HJZC73NWOR6zAyB-3T6M7kjynhdJHFwC7CBgeokFuXTU1C-gwlD-_B8JxvXHVr93_Y3Ma4_m0w2e49IszhizY-CnW2qNfj8OaIi0kLJTYSON13HohrFsffQ=='],null,['[[],[],[],[],null,null,true]',1623785772516],null]",
+    "_ga": "GA1.2.1930691142.1623785772",
+    "sliguid": "64c7a56e-6466-459a-a591-a7809684ab93",
+    "slireg": "https://scout.us2.salesloft.com",
+    "slirequested": "true",
 }
 
-proxies = [
-    {'ip': '79.143.87.136', 'port': '9090'},
-    {'ip': '136.226.33.115', 'port': '80'}
-]
+proxies = [{"ip": "79.143.87.136", "port": "9090"}, {"ip": "136.226.33.115", "port": "80"}]
 
 # from webdriver_manager.chrome import ChromeDriverManager
 # ChromeDriverManager().install()
@@ -81,7 +78,7 @@ def get_html_untappd_ciders(url, driver, flag=None):
         cur_size = len(driver.find_elements_by_class_name(flag["class_name"]))
         while cur_size <= flag["size"]:
             try:
-                driver.find_elements_by_link_text('Show More')[-1].click()
+                driver.find_elements_by_link_text("Show More")[-1].click()
                 cur_size = len(driver.find_elements_by_class_name(flag["class_name"]))
                 time.sleep(5)
             except:

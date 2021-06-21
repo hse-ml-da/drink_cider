@@ -10,22 +10,23 @@ from nltk.corpus import stopwords
 
 class CiderAdviser:
     def __init__(self):
-        self.__russian_stopwords = get_stop_words('ru')
-        self.__russian_stopwords.extend(stopwords.words('russian'))
+        self.__russian_stopwords = get_stop_words("ru")
+        self.__russian_stopwords.extend(stopwords.words("russian"))
         self.__mystem = Mystem()
 
         with open(os.path.join("src", "resources", "ciders_with_tf_idf.json")) as input_file:
             self.__cider_data = json.load(input_file)
-        self.__tf_idf = np.array([cider['tf_idf'] for cider in self.__cider_data.values()])
+        self.__tf_idf = np.array([cider["tf_idf"] for cider in self.__cider_data.values()])
 
         with open(os.path.join("src", "resources", "vectorizer.pickle", "rb")) as input_file:
             self.__vectorizer = pickle.load(input_file)
 
     def __parse(self, message: str) -> str:
-        re_message = re.sub(r'[A-z!.,?:()%\'/\n\d+—-]', '', message.lower())
+        re_message = re.sub(r"[A-z!.,?:()%\'/\n\d+—-]", "", message.lower())
         tokens = self.__mystem.lemmatize(re_message)
-        tokens = [token for token in tokens
-                  if token != " " and len(token) > 2 and token not in self.__russian_stopwords]
+        tokens = [
+            token for token in tokens if token != " " and len(token) > 2 and token not in self.__russian_stopwords
+        ]
 
         return " ".join(tokens)
 
