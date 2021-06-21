@@ -12,12 +12,14 @@ class Dialogue:
 
     def __init__(self):
         self.__logger = getLogger(__file__)
+        self.__model = None
         try:
             self.__tokenizer = AutoTokenizer.from_pretrained("Grossmend/rudialogpt3_medium_based_on_gpt2")
             if not exists(self.__path_to_model):
                 self.__logger.info("Can't find the weights for model, so download it")
                 url_opener = URLopener()
                 url_opener.retrieve(self.__link_to_model, self.__path_to_model)
+            torch.backends.quantized.engine = "qnnpack"
             self.__model = torch.load(self.__path_to_model)
             self.__model.eval()
         except Exception as e:
