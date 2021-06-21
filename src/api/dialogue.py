@@ -1,37 +1,25 @@
-import pickle
-import subprocess
-import tarfile
 from logging import getLogger
 from os.path import join, exists
 
 import torch
-from torch.serialization import _open_zipfile_reader, _load
 from transformers import AutoTokenizer
 
 
 class Dialogue:
-    __link_to_model = "https://voudy-data.s3.eu-north-1.amazonaws.com/dialogue_model_weights.pth.tar.gz"
-    __path_to_model = join("src", "resources", "dialogue_model_weights.pth.tar.gz")
+    __path_to_model = join("src", "resources", "dialogue_model_weights.pth")
 
     def __init__(self):
         self.__logger = getLogger(__file__)
         self.__model = None
-        try:
-            self.__tokenizer = AutoTokenizer.from_pretrained("Grossmend/rudialogpt3_medium_based_on_gpt2")
-            if not exists(self.__path_to_model):
-                subprocess.run(["wget", self.__link_to_model, "-O", self.__path_to_model])
-            torch.backends.quantized.engine = "qnnpack"
-            self.__model = self.__torch_load_tar_gz(self.__path_to_model)
-            self.__model.eval()
-        except Exception as e:
-            self.__logger.error(f"Error during model initialization: {e}")
-
-    def __torch_load_tar_gz(self, file_path: str) -> torch.nn.Module:
-        tar = tarfile.open(file_path, "r:gz")
-        member = tar.getmembers()[0]
-        untar = tar.extractfile(member)
-        with _open_zipfile_reader(untar) as zipfile:
-            return _load(zipfile, torch.device("cpu"), pickle)
+        if not exists(self.__path_to_model):
+            self.__logger.info(f"Can't find weights for model in {self.__path_to_model}")
+        else:
+            try:
+                self.__tokenizer = AutoTokenizer.from_pretrained("Grossmend/rudialogpt3_medium_based_on_gpt2")
+                self.__model = torch.load(self.__path_to_model)
+                self.__model.eval()
+            except Exception as e:
+                self.__logger.error(f"Error during model initialization: {e}")
 
     @property
     def enabled(self) -> bool:
