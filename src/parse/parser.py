@@ -1,7 +1,7 @@
 from natasha import Doc, Segmenter, MorphVocab, NewsEmbedding, NewsNERTagger, NewsSyntaxParser
 from natasha.morph.tagger import NewsMorphTagger
 
-from src.parse.ciry_extractor import CityExtractor
+from src.parse.city_extractor import CityExtractor
 from src.parse.command_parsers.city_parser import CityParser
 from src.parse.intent import Intent, Command
 from src.parse.command_parsers.weather_parser import WeatherParser

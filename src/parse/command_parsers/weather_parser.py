@@ -2,7 +2,7 @@ from typing import Dict, Optional
 
 from natasha import Doc
 
-from src.parse.ciry_extractor import CityExtractor
+from src.parse.city_extractor import CityExtractor
 from src.parse.command_parsers.command_parser import CommandParser
 
 
