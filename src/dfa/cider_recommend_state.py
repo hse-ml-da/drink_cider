@@ -24,7 +24,7 @@ rating: {}/5
         super().__init__()
         self.__cider_advisor = CiderAdviser()
         if not self.__cider_advisor.enabled:
-            self.move = self.__disable_message
+            self.move = self.__disable_move
 
     @property
     def introduce_message(self) -> Optional[str]:
