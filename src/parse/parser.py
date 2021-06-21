@@ -2,6 +2,7 @@ from natasha import Doc, Segmenter, MorphVocab, NewsEmbedding, NewsNERTagger, Ne
 from natasha.morph.tagger import NewsMorphTagger
 
 from src.parse.city_extractor import CityExtractor
+from src.parse.command_parsers.cider_parser import CiderParser
 from src.parse.command_parsers.city_parser import CityParser
 from src.parse.intent import Intent, Command
 from src.parse.command_parsers.weather_parser import WeatherParser
@@ -12,6 +13,7 @@ class Parser:
     def __init__(self):
         city_extractor = CityExtractor()
         self.__command_parsers = {
+            Command.CIDER: CiderParser(),
             Command.WEATHER: WeatherParser(city_extractor),
             Command.CITY: CityParser(city_extractor),
         }

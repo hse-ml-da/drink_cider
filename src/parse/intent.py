@@ -6,6 +6,7 @@ from typing import Dict, Optional
 class Command(Enum):
     WEATHER = auto()
     CITY = auto()
+    CIDER = auto()
     UNKNOWN = auto()
 
 
