@@ -1,3 +1,4 @@
+import os
 import re
 import json
 import pickle
@@ -25,11 +26,11 @@ class CiderAdviser:
         self.__russian_stopwords.extend(stopwords.words("russian"))
         self.__mystem = Mystem()
 
-        with open("ciders_with_tf_idf.json") as input_file:
+        with open(os.path.join("src", "resources", "ciders_with_tf_idf.json")) as input_file:
             self.__cider_data = json.load(input_file)
         self.__tf_idf = np.array([cider["tf_idf"] for cider in self.__cider_data.values()])
 
-        with open("vectorizer.pickle", "rb") as input_file:
+        with open(os.path.join("src", "resources", "vectorizer.pickle", "rb")) as input_file:
             self.__vectorizer = pickle.load(input_file)
 
     def __parse(self, message: str) -> str:
