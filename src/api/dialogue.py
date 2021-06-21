@@ -29,9 +29,9 @@ class Dialogue:
     def __torch_load_tar_gz(self, file_path: str) -> torch.nn.Module:
         tar = tarfile.open(file_path, "r:gz")
         member = tar.getmembers()[0]
-        with tar.extractfile(member) as untar:
-            with _open_zipfile_reader(untar) as zipfile:
-                return _load(zipfile, torch.device("cpu"), pickle)
+        untar = tar.extractfile(member)
+        with _open_zipfile_reader(untar) as zipfile:
+            return _load(zipfile, torch.device("cpu"), pickle)
 
     @property
     def enabled(self) -> bool:
