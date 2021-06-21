@@ -4,28 +4,15 @@ import urllib.request
 from bs4 import BeautifulSoup
 from selenium import webdriver
 
-cookies = {
-    "__utma": "13579763.66457459.1624011192.1624011192.1624011192.1",
-    "__utmb": "13579763.10.9.1624011657575",
-    "__utmc": "13579763",
-    "__utmz": "13579763.1623926840.4.3.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided)",
-    "__utmt": "1",
-    "_ALGOLIA": "99142a65-8111-4d7b-b788-c4565716d5b9",
-    "untappd_user_v3_e": "c2f3a8cf34aaba61afda364ea7cc98a0f0731afbf43c3bfe2e3243b4d9a12216bf5ab645d478a5e9076f16b2b27f7637ab5c88b3304d57af7fad02f97d1a597d3ZfUjmK1oQDtcoWl%2B9%2FyLjfSNmrAekHnLqLTU23ATpKfeB808Lprbql%2BMYx3KLjg9OdH%2FozbguIKPMz1IbYetA%3D%3D",
-    "ut_d_l": "7ca0d74e18218e26345aa5be52298c12fcfc0d3a7783b9d89ccce2df3422f0cad77bc7646f7a15fb212c5ff261caf8e87b2a39afc6a894f4ad479f432bf4661cVLeFP0RVh88qm7okaUgG8izqeSUrCToPO4px0cza4CBhK39VH30TXnvkonXXn6tBAaP9lQkYSCj6WpTJgSN2ow%3D%3D",
-    "__gads": "ID=0cb79354f00e9e22-227c9c5062c800d7:T=1623785784:RT=1623785784:S=ALNI_MbkTFO32OJY9qGxz6FtSvNGFO2_Qg",
-    "FCCDCF": "[['AKsRol8D1vSInhHSM4yX31mseEJAfgFs-LRHMAJLhR8HJZC73NWOR6zAyB-3T6M7kjynhdJHFwC7CBgeokFuXTU1C-gwlD-_B8JxvXHVr93_Y3Ma4_m0w2e49IszhizY-CnW2qNfj8OaIi0kLJTYSON13HohrFsffQ=='],null,['[[],[],[],[],null,null,true]',1623785772516],null]",
-    "_ga": "GA1.2.1930691142.1623785772",
-    "sliguid": "64c7a56e-6466-459a-a591-a7809684ab93",
-    "slireg": "https://scout.us2.salesloft.com",
-    "slirequested": "true",
-}
+# Untappd cookies
+cookies = None
 
 proxies = [{"ip": "79.143.87.136", "port": "9090"}, {"ip": "136.226.33.115", "port": "80"}]
 
 # from webdriver_manager.chrome import ChromeDriverManager
 # ChromeDriverManager().install()
-driver_path = "/Users/tihonvorobev/.wdm/drivers/chromedriver/mac64/91.0.4472.101/chromedriver"
+# Path to chromedriver
+driver_path = None
 
 
 def get_html(url):
@@ -37,6 +24,14 @@ def get_html(url):
 
 def get_soup(html):
     return BeautifulSoup(html, "html.parser")
+
+
+def get_abv(text):
+    return float(text.split("%")[0])
+
+
+def get_rating(text):
+    return float(text[1:-1])
 
 
 def soup_find(soup, class_):
@@ -53,9 +48,9 @@ def get_cider_descrption(html, comment_size=10):
     descrption["name"] = soup.find(class_="name").h1.get_text()
     descrption["descrption"] = soup_find(soup, "beer-descrption-read-less")
     descrption["brewery"] = soup_find(soup, "brewery")
-    descrption["abv"] = soup_find(soup, "abv")
-    descrption["rating"] = soup_find(soup, "num")
     descrption["style"] = soup_find(soup, "style")
+    descrption["abv"] = get_abv(soup_find(soup, "abv"))
+    descrption["rating"] = get_rating(soup_find(soup, "num"))
     descrption["comments"] = soup_find_all(soup, "comment-text", comment_size)
     return descrption
 
