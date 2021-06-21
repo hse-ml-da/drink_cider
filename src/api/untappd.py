@@ -35,17 +35,17 @@ def get_rating(text):
 
 
 def soup_find(soup, class_):
-    return soup.find(class_=class_).get_text()
+    return soup.find(class_=class_).get_text().strip()
 
 
 def soup_find_all(soup, class_, limit=None):
-    return [item.get_text() for item in soup.find_all(class_=class_, limit=limit)]
+    return [item.get_text().strip() for item in soup.find_all(class_=class_, limit=limit)]
 
 
 def get_cider_descrption(html, comment_size=10):
     soup = get_soup(html)
     descrption = {}
-    descrption["name"] = soup.find(class_="name").h1.get_text()
+    descrption["name"] = soup.find(class_="name").h1.get_text().strip()
     descrption["descrption"] = soup_find(soup, "beer-descrption-read-less")
     descrption["brewery"] = soup_find(soup, "brewery")
     descrption["style"] = soup_find(soup, "style")
