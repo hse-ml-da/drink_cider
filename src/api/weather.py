@@ -2,7 +2,7 @@ import os
 from dataclasses import dataclass
 from enum import Enum, auto
 from logging import getLogger
-from typing import Optional
+from typing import Optional, Dict, List
 
 from requests import get
 
@@ -24,13 +24,20 @@ class ResponseStatus(Enum):
 @dataclass
 class WeatherApiResponse:
     status: ResponseStatus
-    weather_description: Optional[WeatherDescription] = None
+    weather_description: Optional[List[WeatherDescription]] = None
+
+
+class WeatherTime(Enum):
+    TODAY = auto()
+    TOMORROW = auto()
+    WEEK = auto()
 
 
 class WeatherAPI:
 
     __OPEN_WEATHER_API_KEY = "OPEN_WEATHER_API_KEY"
-    __api_endpoint = "https://api.openweathermap.org/data/2.5/weather"
+    __api_forecast_endpoint = "https://api.openweathermap.org/data/2.5/forecast/daily"
+    __api_current_endpoint = "https://api.openweathermap.org/data/2.5/weather"
 
     def __init__(self):
         self.__logger = getLogger(__file__)
@@ -42,26 +49,43 @@ class WeatherAPI:
     def enabled(self) -> bool:
         return self.__api_key is not None
 
-    def __create_request_url(self, city: str) -> str:
-        return f"?q={city}&appid={self.__api_key}&lang=ru&units=metric"
-
-    def get_weather(self, city: str) -> Optional[WeatherApiResponse]:
-        params = {"q": city, "appid": self.__api_key, "lang": "ru", "units": "metric"}
-        response = get(self.__api_endpoint, params=params)
-        if response.status_code == 404:
-            self.__logger.info(f"Request to weather in unknown city: {city}")
-            return WeatherApiResponse(ResponseStatus.NOT_FOUND)
-        if response.status_code != 200:
-            self.__logger.error(f"Request to open weather return {response.status_code} status code")
-            return WeatherApiResponse(ResponseStatus.UNAVAILABLE)
-        parsed_response = response.json()
-        self.__logger.info(f"Successful request for weather in {city}")
-        return WeatherApiResponse(
-            ResponseStatus.OK,
+    @staticmethod
+    def __extract_forecast(raw_weather: Dict) -> List[WeatherDescription]:
+        return [
             WeatherDescription(
-                parsed_response["main"]["temp"],
-                parsed_response["main"]["feels_like"],
-                parsed_response["wind"]["speed"],
-                parsed_response["weather"][0]["description"],
-            ),
+                response["temp"]["day"],
+                response["feels_like"]["day"],
+                response["speed"],
+                response["weather"][0]["description"],
+            )
+            for response in raw_weather["list"][1:]
+        ]
+
+    @staticmethod
+    def __extract_current_weather(raw_weather: Dict) -> WeatherDescription:
+        return WeatherDescription(
+            raw_weather["main"]["temp"],
+            raw_weather["main"]["feels_like"],
+            raw_weather["wind"]["speed"],
+            raw_weather["weather"][0]["description"],
         )
+
+    def get_weather(self, city: str) -> WeatherApiResponse:
+        forecast_params = {"q": city, "appid": self.__api_key, "lang": "ru", "units": "metric", "cnt": 8}
+        forecast_response = get(self.__api_forecast_endpoint, params=forecast_params)
+        current_params = {"q": city, "appid": self.__api_key, "lang": "ru", "units": "metric"}
+        current_response = get(self.__api_current_endpoint, params=current_params)
+
+        for response in [forecast_response, current_response]:
+            if response.status_code == 404:
+                self.__logger.info(f"Request to weather in unknown city: {city}")
+                return WeatherApiResponse(ResponseStatus.NOT_FOUND)
+            if response.status_code != 200:
+                self.__logger.error(f"Request to open weather return {forecast_response.status_code} status code")
+                return WeatherApiResponse(ResponseStatus.UNAVAILABLE)
+        self.__logger.info(f"Successful request for weather in {city}")
+
+        forecast_response = self.__extract_forecast(forecast_response.json())
+        current_response = self.__extract_current_weather(current_response.json())
+
+        return WeatherApiResponse(ResponseStatus.OK, [current_response] + forecast_response[1:])
