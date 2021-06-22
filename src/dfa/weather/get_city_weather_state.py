@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 import src.dfa as dfa
@@ -14,8 +15,11 @@ class GetCityWeatherState(dfa.BaseState):
     __tomorrow_weather_message = (
         "Завтра там будет {}. Температура {}°C, но ощущаться будет как {}°C. Ветер будет дуть со скоростью {} м/с."
     )
-    __next_week_forecast = "А в течение следующей недели ожидается:"
-    __forecast_message = "{}. {}. Температура {}°C, но ощущается как {}°C. Ветер дует со скоростью {} м/с."
+    __next_week_forecast = "А вот прогноз на следующую неделю."
+    __forecast_message = (
+        "{} там будет {}. Температура {}°C, но ощущаться будет как {}°C. Ветер будет дуть со скоростью {} м/с."
+    )
+    __weekdays = ["В понедельник", "Во вторник", "В среду", "В четверг", "В пятницу", "В субботу", "В воскресенье"]
 
     def __init__(self):
         super().__init__()
@@ -46,10 +50,12 @@ class GetCityWeatherState(dfa.BaseState):
                 self.__today_weather_message.format(desc.weather, desc.temperature, desc.feels_like, desc.wind_speed),
                 self.__next_week_forecast,
             ]
+            today_weekday = datetime.today().weekday()
             for i, desc in enumerate(weather_descriptions[1:]):
+                weekday = self.__weekdays[(today_weekday + 1 + i) % len(self.__weekdays)]
                 message.append(
                     self.__forecast_message.format(
-                        str(i + 1), desc.weather.capitalize(), desc.temperature, desc.feels_like, desc.wind_speed
+                        weekday, desc.weather, desc.temperature, desc.feels_like, desc.wind_speed
                     )
                 )
             return "\n".join(message)
