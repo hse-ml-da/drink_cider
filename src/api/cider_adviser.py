@@ -1,19 +1,13 @@
-
-import json
 import pickle
-import re
-import scipy as sp
 from dataclasses import dataclass
 from logging import getLogger
 from os import environ
 from os.path import join, exists
 from urllib.request import URLopener
 
-import nltk
-import numpy as np
-from nltk.corpus import stopwords
-from pymystem3 import Mystem
-from stop_words import get_stop_words
+import scipy as sp
+
+from src.data.tf_idf import TFIDFParser
 
 
 @dataclass
@@ -46,33 +40,21 @@ class CiderAdviser:
             url_opener = URLopener()
             url_opener.retrieve(url, self.__vectorized_cider_descriptions)
 
-        with open(self.__vectorized_cider_descriptions) as input_file:
+        with open(self.__vectorized_cider_descriptions, "rb") as input_file:
             self.__cider_data = pickle.load(input_file)
         self.__tf_idf = sp.sparse.vstack([cider["tf_idf"] for cider in self.__cider_data.values()])
 
         with open(self.__vectorization_model_path, "rb") as input_file:
             self.__vectorizer = pickle.load(input_file)
 
-        nltk.download("stopwords")
-        self.__russian_stopwords = get_stop_words("ru")
-        self.__russian_stopwords.extend(stopwords.words("russian"))
-        self.__mystem = Mystem()
+        self.__tf_idf_parser = TFIDFParser()
 
     @property
     def enabled(self) -> bool:
         return self.__enabled
 
-    def __parse(self, message: str) -> str:
-        re_message = re.sub(r"[A-z!.,?:()%\'/\n\d+—-]", r" ", message.lower())
-        tokens = self.__mystem.lemmatize(re_message)
-        tokens = [
-            token for token in tokens if token != " " and len(token) > 2 and token not in self.__russian_stopwords
-        ]
-
-        return " ".join(tokens)
-
     def get_advise(self, message: str) -> CiderDescription:
-        parse_message = self.__parse(message)
+        parse_message = self.__tf_idf_parser(message)
         vectorized_message = self.__vectorizer.transform([parse_message]).toarray()
         res_index = self.__tf_idf.dot(vectorized_message.T).argmax()
         res_key = list(self.__cider_data.keys())[res_index]

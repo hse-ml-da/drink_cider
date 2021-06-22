@@ -24,10 +24,17 @@ class MainMessageHandler(AbstractHandler):
             return
         response_messages = self.__model.handle_message(update.effective_chat.id, update.message.text)
         for response_message in response_messages:
-            message = response_message.replace("-", "\\-").replace(".", "\\.").replace("!", "\\!")
+            message = self.__shield_message(response_message)
             callback_context.bot.send_message(
                 chat_id=update.effective_chat.id, text=message, parse_mode=telegram.ParseMode.MARKDOWN_V2
             )
+
+    __shield_symbols = ["-", ".", "!", "(", ")"]
+
+    def __shield_message(self, message: str) -> str:
+        for symbol in self.__shield_symbols:
+            message = message.replace(symbol, f"\\{symbol}")
+        return message
 
     def create(self) -> Handler:
         return MessageHandler(Filters.text & (~Filters.command), self._callback_wrapper)

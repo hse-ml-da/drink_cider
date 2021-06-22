@@ -1,13 +1,16 @@
 import re
 import pickle
+
+import nltk
 from pymystem3 import Mystem
 from stop_words import get_stop_words
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-class Parser:
+class TFIDFParser:
     def __init__(self):
+        nltk.download("stopwords")
         self.__russian_stopwords = get_stop_words("ru")
         self.__russian_stopwords.extend(stopwords.words("russian"))
         self.__mystem = Mystem()
@@ -26,7 +29,7 @@ if __name__ == "__main__":
     with open("ciders.pickle", "rb") as input_file:
         cider_data = pickle.load(input_file)
 
-    parser = Parser()
+    parser = TFIDFParser()
     cider_documents = []
     for cider in cider_data.values():
         filtering_comment = list(map(lambda comment: comment if len(comment.split()) > 2 else "", cider["comments"]))
