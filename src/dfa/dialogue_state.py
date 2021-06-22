@@ -17,5 +17,5 @@ class DialogueState(dfa.BaseState):
         return True
 
     def move(self, intent: Intent, user_id: int) -> dfa.MoveResponse:
-        answer = self.__dialogue_api.generate_answer(intent.message)
+        answer = self.__dialogue_api.generate_answer(intent.message, user_id)
         return dfa.MoveResponse(dfa.StartState(), answer)

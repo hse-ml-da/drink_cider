@@ -1,5 +1,6 @@
 from logging import getLogger
 from os.path import join, exists
+from typing import Dict, Any
 
 import torch
 from transformers import AutoTokenizer
@@ -21,6 +22,8 @@ class Dialogue:
             except Exception as e:
                 self.__logger.error(f"Error during model initialization: {e}")
 
+        self.__history: Dict[int, torch.Tensor] = {}
+
     @property
     def enabled(self) -> bool:
         return self.__model is not None
@@ -37,13 +40,16 @@ class Dialogue:
             len_param = "-"
         return len_param
 
-    def generate_answer(self, message: str) -> str:
+    def generate_answer(self, message: str, user_id: int) -> str:
         # Encode the new user input, add parameters and return a tensor in PyTorch
         input_ids = self.__tokenizer.encode(f"|0|{self._get_length_param(message)}|{message}|1|-|", return_tensors="pt")
 
+        if user_id in self.__history:
+            input_ids = torch.cat([self.__history[user_id], input_ids], dim=-1)
+
         # Generated a response
         with torch.no_grad():
-            chat_history_ids = self.__model.generate(
+            self.__history[user_id] = self.__model.generate(
                 input_ids,
                 num_return_sequences=1,
                 max_length=256,
@@ -59,4 +65,4 @@ class Dialogue:
                 device="cpu",
             )
 
-        return self.__tokenizer.decode(chat_history_ids[:, input_ids.shape[-1] :][0], skip_special_tokens=True)
+        return self.__tokenizer.decode(self.__history[user_id][:, input_ids.shape[-1] :][0], skip_special_tokens=True)
