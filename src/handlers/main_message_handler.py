@@ -1,3 +1,4 @@
+import telegram
 from telegram import Update
 from telegram.ext import CallbackContext, Handler, MessageHandler, Filters
 
@@ -23,7 +24,10 @@ class MainMessageHandler(AbstractHandler):
             return
         response_messages = self.__model.handle_message(update.effective_chat.id, update.message.text)
         for response_message in response_messages:
-            callback_context.bot.send_message(chat_id=update.effective_chat.id, text=response_message)
+            message = response_message.replace("-", "\\-").replace(".", "\\.").replace("!", "\\!")
+            callback_context.bot.send_message(
+                chat_id=update.effective_chat.id, text=message, parse_mode=telegram.ParseMode.MARKDOWN_V2
+            )
 
     def create(self) -> Handler:
         return MessageHandler(Filters.text & (~Filters.command), self._callback_wrapper)

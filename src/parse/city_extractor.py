@@ -1,5 +1,5 @@
 from os.path import join
-from typing import Dict, Optional
+from typing import Optional
 
 from natasha import Doc
 from natasha.grammars.addr import Settlement, INT, DOT, TITLE, NOUN, ADJF, DASH
@@ -8,12 +8,8 @@ from yargy.pipelines import morph_pipeline
 from yargy.predicates import in_caseless, caseless, normalized, dictionary
 from yargy.rule import InterpretationRule
 
-from src.parse.command_parser import CommandParser
 
-
-class WeatherParser(CommandParser):
-    __keywords = ["погода", "температура"]
-
+class CityExtractor:
     __city_abbreviations = {
         "Москва": ["мск"],
         "Санкт-Петербург": ["спб", "питер", "петербург", "расчленинград"],
@@ -27,27 +23,18 @@ class WeatherParser(CommandParser):
         yargi_interpolation_rule = self.__rebuild_yargi_parser_rules()
         self.__yargi_parser = Parser(yargi_interpolation_rule)
 
-    def __extract_city(self, message: Doc) -> Optional[str]:
+    def extract_city(self, message: Doc) -> Optional[str]:
         for span in message.spans:
             if span.type == "LOC":
-                return span.normal
+                return self.__back_translation(span.normal)
         for token in message.tokens:
             if self.__yargi_parser.match(token.lemma) is not None:
                 return self.__back_translation(token.lemma)
         return None
 
-    def process(self, message: Doc) -> Optional[Dict[str, str]]:
-        city = self.__extract_city(message)
-        is_keywords = any([t.lemma in self.__keywords for t in message.tokens])
-        if city is not None:
-            return {"city": city}
-        if is_keywords:
-            return {}
-        return None
-
     def __back_translation(self, city: str) -> str:
         for name, abbreviation in self.__city_abbreviations.items():
-            if city in abbreviation:
+            if city.lower() in abbreviation:
                 return name
         return city
 

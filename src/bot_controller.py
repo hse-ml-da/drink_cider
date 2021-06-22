@@ -4,6 +4,7 @@ from typing import List
 from telegram.ext import Updater, Handler
 
 from src.handlers.get_state_handler import GetStateHandler
+from src.handlers.help_handler import HelpHandler
 from src.handlers.main_message_handler import MainMessageHandler
 from src.handlers.reset_handler import ResetHandler
 from src.handlers.start_handler import StartHandler
@@ -24,6 +25,7 @@ class BotController:
     def __init_handlers(self) -> List[Handler]:
         return [
             StartHandler().create(),
+            HelpHandler().create(),
             MainMessageHandler(self.__model).create(),
             ResetHandler(self.__model).create(),
             GetStateHandler(self.__model).create(),
