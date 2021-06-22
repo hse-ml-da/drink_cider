@@ -1,6 +1,8 @@
+
 import json
 import pickle
 import re
+import scipy as sp
 from dataclasses import dataclass
 from logging import getLogger
 from os import environ
@@ -27,7 +29,7 @@ class CiderDescription:
 
 class CiderAdviser:
     __vectorized_cider_url_env = "VECTORIZED_CIDER_URL"
-    __vectorized_cider_descriptions = join("src", "resources", "ciders_with_tf_idf.json")
+    __vectorized_cider_descriptions = join("src", "resources", "ciders_with_tf_idf.pickle")
     __vectorization_model_path = join("src", "resources", "vectorizer.pickle")
     __enabled = True
 
@@ -45,8 +47,8 @@ class CiderAdviser:
             url_opener.retrieve(url, self.__vectorized_cider_descriptions)
 
         with open(self.__vectorized_cider_descriptions) as input_file:
-            self.__cider_data = json.load(input_file)
-        self.__tf_idf = np.array([cider["tf_idf"] for cider in self.__cider_data.values()])
+            self.__cider_data = pickle.load(input_file)
+        self.__tf_idf = sp.sparse.vstack([cider["tf_idf"] for cider in self.__cider_data.values()])
 
         with open(self.__vectorization_model_path, "rb") as input_file:
             self.__vectorizer = pickle.load(input_file)
@@ -61,7 +63,7 @@ class CiderAdviser:
         return self.__enabled
 
     def __parse(self, message: str) -> str:
-        re_message = re.sub(r"[A-z!.,?:()%\'/\n\d+—-]", "", message.lower())
+        re_message = re.sub(r"[A-z!.,?:()%\'/\n\d+—-]", r" ", message.lower())
         tokens = self.__mystem.lemmatize(re_message)
         tokens = [
             token for token in tokens if token != " " and len(token) > 2 and token not in self.__russian_stopwords
