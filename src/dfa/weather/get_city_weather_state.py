@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Dict
 
 import src.dfa as dfa
 from src.api.weather import WeatherAPI, ResponseStatus, WeatherDescription, WeatherTime
@@ -27,6 +27,8 @@ class GetCityWeatherState(dfa.BaseState):
         self.__weather_api = WeatherAPI()
         if not self.__weather_api.enabled:
             self.move = self._disable_move
+
+        self.__history: Dict[int, Intent] = {}
 
     @property
     def is_technical_state(self) -> bool:
@@ -67,6 +69,15 @@ class GetCityWeatherState(dfa.BaseState):
                 message = self.__unknown_city_message.format(intent.parameters["city"])
             else:
                 desc = api_response.weather_description
-                message = self.__prepare_message(desc, intent.parameters.get("time", WeatherTime.TODAY))
+                if "time" in intent.parameters:
+                    time = intent.parameters["time"]
+                elif user_id in self.__history:
+                    time = self.__history[user_id].parameters["time"]
+                else:
+                    time = WeatherTime.TODAY
+                message = self.__prepare_message(desc, time)
             return dfa.MoveResponse(next_state, message)
+
+        if "time" in intent.parameters:
+            self.__history[user_id] = intent
         return dfa.MoveResponse(dfa.AskCityState(), None)
