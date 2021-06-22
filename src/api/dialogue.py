@@ -1,6 +1,6 @@
 from logging import getLogger
 from os.path import join, exists
-from typing import Dict, Any
+from typing import Dict
 
 import torch
 from transformers import AutoTokenizer
@@ -8,6 +8,7 @@ from transformers import AutoTokenizer
 
 class Dialogue:
     __path_to_model = join("src", "resources", "dialogue_model_weights.pth")
+    __n_context_tokens = 512
 
     def __init__(self):
         self.__logger = getLogger(__file__)
@@ -45,14 +46,14 @@ class Dialogue:
         input_ids = self.__tokenizer.encode(f"|0|{self._get_length_param(message)}|{message}|1|-|", return_tensors="pt")
 
         if user_id in self.__history:
-            input_ids = torch.cat([self.__history[user_id], input_ids], dim=-1)
+            input_ids = torch.cat([self.__history[user_id], input_ids], dim=-1)[:, -self.__n_context_tokens :]
 
         # Generated a response
         with torch.no_grad():
             self.__history[user_id] = self.__model.generate(
                 input_ids,
                 num_return_sequences=1,
-                max_length=256,
+                max_length=self.__n_context_tokens,
                 no_repeat_ngram_size=3,
                 do_sample=True,
                 top_k=50,

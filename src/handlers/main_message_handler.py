@@ -25,6 +25,8 @@ class MainMessageHandler(AbstractHandler):
         response_messages = self.__model.handle_message(update.effective_chat.id, update.message.text)
         for response_message in response_messages:
             message = self.__shield_message(response_message)
+            if message == "":
+                continue
             callback_context.bot.send_message(
                 chat_id=update.effective_chat.id, text=message, parse_mode=telegram.ParseMode.MARKDOWN_V2
             )
