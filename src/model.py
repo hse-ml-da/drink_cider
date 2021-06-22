@@ -37,7 +37,7 @@ class Model:
     def __make_move(
         self, user_id: int, current_state: dfa.BaseState, intent: Intent, response_messages: List[str]
     ) -> dfa.MoveResponse:
-        response = current_state.move(intent)
+        response = current_state.move(intent, user_id)
         self.__logger.info(
             f"Move {user_id} from {current_state.__class__.__name__} to {response.new_state.__class__.__name__}"
         )

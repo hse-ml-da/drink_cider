@@ -8,7 +8,7 @@ from src.parse.intent import Intent, Command
 
 class GetCityWeatherState(dfa.BaseState):
 
-    __disable_message = "Модуль погоды ушёл в отпуск и сейчас недоступен."
+    _disable_message = "Модуль погоды ушёл в отпуск и сейчас недоступен."
     __unavailable_message = "Сервер сейчас недоступен, попробуйте позже."
     __unknown_city_message = "Я не знаю такого города: {}"
     __today_weather_message = "Сейчас там {}. Температура {}°C, но ощущается как {}°C. Ветер дует со скоростью {} м/с."
@@ -26,14 +26,11 @@ class GetCityWeatherState(dfa.BaseState):
         self._command_handler[Command.WEATHER] = self.handle_weather_command
         self.__weather_api = WeatherAPI()
         if not self.__weather_api.enabled:
-            self.move = self.__disable_move
+            self.move = self._disable_move
 
     @property
     def is_technical_state(self) -> bool:
         return True
-
-    def __disable_move(self, intent: Intent) -> dfa.MoveResponse:
-        return dfa.MoveResponse(dfa.StartState(), self.__disable_message)
 
     def __prepare_message(self, weather_descriptions: List[WeatherDescription], time: WeatherTime) -> str:
         if time == WeatherTime.TODAY:
@@ -60,7 +57,7 @@ class GetCityWeatherState(dfa.BaseState):
                 )
             return "\n".join(message)
 
-    def handle_weather_command(self, intent: Intent) -> dfa.MoveResponse:
+    def handle_weather_command(self, intent: Intent, user_id: int) -> dfa.MoveResponse:
         if "city" in intent.parameters:
             api_response = self.__weather_api.get_weather(intent.parameters["city"])
             next_state = dfa.StartState()

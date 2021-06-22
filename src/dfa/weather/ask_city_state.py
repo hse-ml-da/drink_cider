@@ -14,7 +14,7 @@ class AskCityState(dfa.BaseState):
     def introduce_message(self) -> Optional[str]:
         return "Какой город тебя интересует?"
 
-    def handle_city_command(self, intent: Intent) -> dfa.MoveResponse:
+    def handle_city_command(self, intent: Intent, user_id: int) -> dfa.MoveResponse:
         if "city" in intent.parameters:
             intent.command = Command.WEATHER
             return dfa.MoveResponse(dfa.GetCityWeatherState(), None)
