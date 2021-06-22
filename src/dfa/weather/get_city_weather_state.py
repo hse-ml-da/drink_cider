@@ -64,6 +64,6 @@ class GetCityWeatherState(dfa.BaseState):
                 message = self.__unknown_city_message.format(intent.parameters["city"])
             else:
                 desc = api_response.weather_description
-                message = self.__prepare_message(desc, intent.parameters["time"])
+                message = self.__prepare_message(desc, intent.parameters.get("time", WeatherTime.TODAY))
             return dfa.MoveResponse(next_state, message)
         return dfa.MoveResponse(dfa.AskCityState(), None)
