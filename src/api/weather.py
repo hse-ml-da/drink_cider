@@ -85,7 +85,7 @@ class WeatherAPI:
                 return WeatherApiResponse(ResponseStatus.UNAVAILABLE)
         self.__logger.info(f"Successful request for weather in {city}")
 
-        forecast_response = self.__extract_forecast(forecast_response.json())
-        current_response = self.__extract_current_weather(current_response.json())
+        forecast_weather = self.__extract_forecast(forecast_response.json())
+        current_weather = self.__extract_current_weather(current_response.json())
 
-        return WeatherApiResponse(ResponseStatus.OK, [current_response] + forecast_response[1:])
+        return WeatherApiResponse(ResponseStatus.OK, [current_weather] + forecast_weather[1:])
