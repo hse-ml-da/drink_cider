@@ -23,6 +23,7 @@ Create profile and then create API in corresponding tab.
 
 Download quantized model weigths from [s3](https://voudy-data.s3.eu-north-1.amazonaws.com/dialogpt2_quant.pth)
    and place them in [src/resources](src/resources).
+
 5. Start bot
 
 Inside your virtual environment run
